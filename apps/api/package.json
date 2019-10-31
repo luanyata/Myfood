@@ -10,9 +10,11 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
-        "graphql-yoga": "^1.18.3"
+        "graphql-yoga": "^1.18.3",
+        "mongoose": "^5.7.0"
     },
     "devDependencies": {
+        "@types/mongoose": "^5.5.17",
         "@types/node": "^12.11.1",
         "@typescript-eslint/eslint-plugin": "^2.6.0",
         "@typescript-eslint/parser": "^2.6.0",
