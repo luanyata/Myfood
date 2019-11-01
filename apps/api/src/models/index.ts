@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import { resolve } from 'path'
 import { readdirSync } from 'fs'
+import { Models } from '../types'
 
 const { MONGO_URI } = process.env
 
@@ -12,7 +13,7 @@ const connect = (): Promise<typeof mongoose> =>
     useUnifiedTopology: true
   })
 
-const models = Object.create({})
+const models: Models = Object.create({})
 
 readdirSync(__dirname)
   .filter(fileName => !fileName.includes('index'))

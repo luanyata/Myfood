@@ -1,18 +1,1 @@
-type User {
-  id: ID!
-  name: String!
-  email: String!
-}
-
-input UserInput {
-  name: String!
-  email: String!
-}
-
-type Query {
-  users: [User!]!
-}
-
-type Mutation {
-  createUser(userInput: UserInput!): User!
-}
+# import Query.*, Mutation.* from './schemas/Product.graphql'

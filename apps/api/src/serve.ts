@@ -1,39 +1,16 @@
 import { resolve } from 'path'
 import { GraphQLServer } from 'graphql-yoga'
+import { models as db } from './models'
+import resolvers from './resolvers'
+import { logMiddleware } from './middlewares/logMiddleware'
 
 const typeDefs = resolve(__dirname, 'schema.graphql')
 
-const USERS = [
-  { id: 1, name: 'Luan', email: 'luan@yata.com' },
-  { id: 2, name: 'Fernanda', email: 'fernanda@yata.com' }
-]
-
-const resolvers = {
-  User: {
-    name: (parent): string => {
-      console.log(parent)
-      return `User: ${parent.name}`
-    }
-  },
-  Query: {
-    users: (): typeof USERS => USERS
-  },
-  Mutation: {
-    createUser: (parent, args): typeof USERS[0] => {
-      const { userInput } = args
-      const user = {
-        ...userInput,
-        id: USERS.length + 1
-      }
-      USERS.push(user)
-      return user
-    }
-  }
-}
-
-const serve = new GraphQLServer({
+const server = new GraphQLServer({
   resolvers,
-  typeDefs
+  typeDefs,
+  context: { db },
+  middlewares: [logMiddleware]
 })
 
-export default serve
+export default server
