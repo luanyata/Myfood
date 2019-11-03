@@ -16,3 +16,16 @@ export interface User {
 export interface UserDocument extends User, Document {
   _id: Schema.Types.ObjectId
 }
+
+interface UserSignInData {
+  email: string
+  password: string
+}
+
+export interface UserSignUpInput {
+  data: UserSignInData & { name: string }
+}
+
+export interface UserSignInInput {
+  data: UserSignInData
+}

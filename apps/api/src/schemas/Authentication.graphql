@@ -1,0 +1,32 @@
+type Mutation {
+  signIn(data: UserSignInInput!): AuthPaylod!
+  signUp(data: UserSignUpInput!): AuthPaylod!
+}
+
+input UserSignInInput {
+  email: String!
+  password: String!
+}
+
+input UserSignUpInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+type AuthPaylod {
+  token: String!
+  user: User!
+}
+
+type User {
+  _id: ID!
+  name: String!
+  email: String!
+  role: UserRole!
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}

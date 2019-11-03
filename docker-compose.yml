@@ -7,6 +7,7 @@ services:
       context: ./apps/api
       dockerfile: Dockerfile
     environment:
+      JWT_SECRET:
       MONGO_URI:
 
   mongo:

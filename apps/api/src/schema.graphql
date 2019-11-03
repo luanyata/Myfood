@@ -1,1 +1,2 @@
 # import Query.*, Mutation.* from './schemas/Product.graphql'
+# import Mutation.* from './schemas/Authentication.graphql'
