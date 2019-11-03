@@ -1,5 +1,4 @@
 import { compare, hash } from 'bcryptjs'
-import { sign } from 'jsonwebtoken'
 import {
   Resolver,
   ProductCreateInput,
@@ -8,7 +7,7 @@ import {
   UserSignUpInput,
   UserSignInInput
 } from '../types'
-import { checkExistence } from '../utils'
+import { checkExistence, issueToken } from '../utils'
 import { CustomError } from '../errors'
 
 const createProduct: Resolver<ProductCreateInput> = (_, args, { db }) => {
@@ -56,7 +55,7 @@ const signIn: Resolver<UserSignInInput> = async (_, args, { db }) => {
   }
 
   const { _id: sub, role } = user
-  const token = sign({ sub, role }, process.env.JWT_SECRET, { expiresIn: '2h' })
+  const token = issueToken({ sub, role })
 
   return { token, user }
 }
@@ -72,7 +71,7 @@ const signUp: Resolver<UserSignUpInput> = async (_, args, { db }) => {
   }).save()
 
   const { _id: sub, role } = user
-  const token = sign({ sub, role }, process.env.JWT_SECRET, { expiresIn: '2h' })
+  const token = issueToken({ sub, role })
 
   return { token, user }
 }
