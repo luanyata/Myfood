@@ -6,5 +6,7 @@ export interface CheckExistenceOptions {
   field?: string
   value?: any
   message?: string
-  where?: { [key: string]: any }
+  where?: Record<string, any>
+  errorCode?: string
+  extensions?: Record<string, any>
 }

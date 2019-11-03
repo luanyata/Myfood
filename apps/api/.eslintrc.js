@@ -20,6 +20,7 @@ module.exports = {
   plugins: ['@typescript-eslint'],
   rules: {
     '@typescript-eslint/member-delimiter-style': 0,
-    '@typescript-eslint/no-explicit-any': 0
+    '@typescript-eslint/no-explicit-any': 0,
+    'space-before-function-paren': 0
   }
 }
