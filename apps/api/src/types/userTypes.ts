@@ -29,3 +29,8 @@ export interface UserSignUpInput {
 export interface UserSignInInput {
   data: UserSignInData
 }
+
+export interface AuthUser {
+  _id: Schema.Types.ObjectId
+  role: UserRole
+}

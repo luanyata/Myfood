@@ -29,8 +29,8 @@ enum Unit {
 }
 
 type Query {
-  products: [Product!]!
-  product(_id: ID!): Product!
+  products: [Product!]! @auth
+  product(_id: ID!): Product! @auth(role: ADMIN)
 }
 
 type Mutation {
