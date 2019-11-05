@@ -5,9 +5,10 @@ import {
   ProductByIdInput,
   ProductUpdateInput,
   UserSignUpInput,
-  UserSignInInput
+  UserSignInInput,
+  ProductDocument
 } from '../types'
-import { checkExistence, issueToken } from '../utils'
+import { findDocument, issueToken } from '../utils'
 import { CustomError } from '../errors'
 
 const createProduct: Resolver<ProductCreateInput> = (_, args, { db }) => {
@@ -19,19 +20,30 @@ const createProduct: Resolver<ProductCreateInput> = (_, args, { db }) => {
 }
 
 const updateProduct: Resolver<ProductUpdateInput> = async (_, args, { db }) => {
-  const { Product } = db
   const { _id, data } = args
 
-  await checkExistence({ db, model: 'Product', field: '_id', value: _id })
-  return Product.findByIdAndUpdate(_id, data, { new: true })
+  const product = await findDocument<ProductDocument>({
+    db,
+    model: 'Product',
+    field: '_id',
+    value: _id
+  })
+
+  Object.keys(data).forEach(prop => (product[prop] = data[prop]))
+
+  return product.save()
 }
 
 const deleteProduct: Resolver<ProductByIdInput> = async (_, arg, { db }) => {
-  const { Product } = db
   const { _id } = arg
 
-  await checkExistence({ db, model: 'Product', field: '_id', value: _id })
-  return Product.findByIdAndDelete(_id)
+  const product = await findDocument<ProductDocument>({
+    db,
+    model: 'Product',
+    field: '_id',
+    value: _id
+  })
+  return product.remove()
 }
 
 const signIn: Resolver<UserSignInInput> = async (_, args, { db }) => {

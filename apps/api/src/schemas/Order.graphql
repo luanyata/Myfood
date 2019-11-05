@@ -1,0 +1,33 @@
+scalar DateTime
+
+type Order {
+  _id: ID!
+  user: User!
+  total: Float!
+  status: OrderStatus!
+  items: [OrderItem!]!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type OrderItem {
+  _id: ID!
+  product: Product!
+  quantity: Float!
+  total: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+enum OrderStatus {
+  WAITING_PAYMENT
+  IN_QUEUE
+  PREPARING
+  READY
+  ON_THE_WAY
+  DELIVERED
+}
+
+type Query {
+  orders: [Order!]! @auth
+}

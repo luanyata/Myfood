@@ -1,8 +1,3 @@
-type Mutation {
-  signIn(data: UserSignInInput!): AuthPaylod!
-  signUp(data: UserSignUpInput!): AuthPaylod!
-}
-
 input UserSignInInput {
   email: String!
   password: String!
@@ -29,4 +24,9 @@ type User {
 enum UserRole {
   USER
   ADMIN
+}
+
+type Mutation {
+  signIn(data: UserSignInInput!): AuthPaylod!
+  signUp(data: UserSignUpInput!): AuthPaylod!
 }
