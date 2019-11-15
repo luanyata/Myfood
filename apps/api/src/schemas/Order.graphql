@@ -30,4 +30,5 @@ enum OrderStatus {
 
 type Query {
   orders: [Order!]! @auth
+  order(_id: ID!): Order! @auth
 }

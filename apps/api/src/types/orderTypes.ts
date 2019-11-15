@@ -23,3 +23,7 @@ export interface Order {
 export interface OrderDocument extends Order, Document {
   _id: Schema.Types.ObjectId
 }
+
+export interface OrderByIdInput {
+  _id: Schema.Types.ObjectId
+}
