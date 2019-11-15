@@ -1,4 +1,4 @@
 # import * from './schemas/Directive.graphql'
 # import Query.*, Mutation.* from './schemas/Product.graphql'
 # import Mutation.* from './schemas/Authentication.graphql'
-# import Query.* from './schemas/Order.graphql'  
+# import Query.*, Mutation.* from './schemas/Order.graphql'  

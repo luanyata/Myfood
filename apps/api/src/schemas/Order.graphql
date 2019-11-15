@@ -10,6 +10,18 @@ type Order {
   updatedAt: DateTime!
 }
 
+input OrderCreateInput {
+  status: OrderStatus
+  user: ID
+  items: [OrderItemCreateInput!]
+}
+
+input OrderItemCreateInput {
+  product: ID!
+  quantity: Float!
+  total: Float!
+}
+
 type OrderItem {
   _id: ID!
   product: Product!
@@ -31,4 +43,9 @@ enum OrderStatus {
 type Query {
   orders: [Order!]! @auth
   order(_id: ID!): Order! @auth
+}
+
+type Mutation {
+  createOrder(data: OrderCreateInput!): Order! @auth
+  deleteOrder(_id: ID!): Order! @auth
 }

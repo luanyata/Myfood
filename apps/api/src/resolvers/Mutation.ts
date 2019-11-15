@@ -6,7 +6,11 @@ import {
   ProductUpdateInput,
   UserSignUpInput,
   UserSignInInput,
-  ProductDocument
+  ProductDocument,
+  OrderCreateArgs,
+  UserRole,
+  OrderDeleteArgs,
+  OrderDocument
 } from '../types'
 import { findDocument, issueToken } from '../utils'
 import { CustomError } from '../errors'
@@ -88,10 +92,56 @@ const signUp: Resolver<UserSignUpInput> = async (_, args, { db }) => {
   return { token, user }
 }
 
+const createOrder: Resolver<OrderCreateArgs> = async (
+  _,
+  args,
+  { db, authUser }
+) => {
+  const { data } = args
+  const { _id, role } = authUser
+  const { Order } = db
+
+  const user = role === UserRole.USER ? _id : data.user || _id
+
+  const total =
+    (data.items && data.items.reduce((sum, item) => sum + item.total, 0)) || 0
+
+  const order = await new Order({
+    ...data,
+    total,
+    user
+  }).save()
+
+  return order
+}
+
+const deleteOrder: Resolver<OrderDeleteArgs> = async (
+  _,
+  args,
+  { db, authUser }
+) => {
+  const { _id } = args
+  const { _id: userId, role } = authUser
+
+  const where = role === UserRole.USER ? { _id, user: userId } : null
+
+  const order = await findDocument<OrderDocument>({
+    db,
+    model: 'Order',
+    field: '_id',
+    value: _id,
+    where
+  })
+
+  return order.remove()
+}
+
 export default {
   createProduct,
   updateProduct,
   deleteProduct,
+  createOrder,
+  deleteOrder,
   signIn,
   signUp
 }

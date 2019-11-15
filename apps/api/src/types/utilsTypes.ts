@@ -1,5 +1,5 @@
 import { Models, UserRole } from '.'
-import { Schema } from 'mongoose'
+import { Types } from 'mongoose'
 
 export interface CheckExistenceOptions {
   model: keyof Models
@@ -13,6 +13,6 @@ export interface CheckExistenceOptions {
 }
 
 export interface TokenPayload {
-  sub: Schema.Types.ObjectId
+  sub: Types.ObjectId
   role: UserRole
 }
