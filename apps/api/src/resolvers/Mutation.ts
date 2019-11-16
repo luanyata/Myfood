@@ -10,10 +10,12 @@ import {
   OrderCreateArgs,
   UserRole,
   OrderDeleteArgs,
-  OrderDocument
+  OrderDocument,
+  OrderUpdateArgs
 } from '../types'
-import { findDocument, issueToken } from '../utils'
+import { findDocument, issueToken, findOrderItem } from '../utils'
 import { CustomError } from '../errors'
+import { Types } from 'mongoose'
 
 const createProduct: Resolver<ProductCreateInput> = (_, args, { db }) => {
   const { Product } = db
@@ -136,11 +138,70 @@ const deleteOrder: Resolver<OrderDeleteArgs> = async (
   return order.remove()
 }
 
+const updateOrder: Resolver<OrderUpdateArgs> = async (
+  _,
+  args,
+  { db, authUser }
+) => {
+  const { data, _id } = args
+  const { _id: userId, role } = authUser
+
+  const isAdmin = role === UserRole.ADMIN
+
+  const where = !isAdmin ? { _id, user: userId } : null
+
+  const order = await findDocument<OrderDocument>({
+    db,
+    model: 'Order',
+    field: '_id',
+    value: _id,
+    where
+  })
+
+  const user = !isAdmin ? userId : data.user || order.user
+
+  const { itemsToAdd = [], itemsToUpdate = [], itemsToDelete = [] } = args.data
+
+  const foundItemsToUpdate = itemsToUpdate.map(orderItem =>
+    findOrderItem(order.items, orderItem._id, 'update')
+  )
+
+  const foundItemsToDelete = itemsToDelete.map(orderItemId =>
+    findOrderItem(order.items, orderItemId, 'delete')
+  )
+
+  foundItemsToUpdate.forEach((orderItem, index) =>
+    orderItem.set(itemsToUpdate[index])
+  )
+
+  foundItemsToDelete.forEach(orderItem => orderItem.remove())
+
+  itemsToAdd.forEach(itemToAdd => {
+    const foundItem = order.items.find(item =>
+      (item.product as Types.ObjectId).equals(itemToAdd.product)
+    )
+
+    if (foundItem) {
+      return foundItem.set({
+        quantity: foundItem.quantity + itemToAdd.quantity,
+        total: foundItem.total + order.total
+      })
+    }
+
+    order.items.push(itemToAdd)
+  })
+
+  order.user = user
+
+  return order.save()
+}
+
 export default {
   createProduct,
   updateProduct,
   deleteProduct,
   createOrder,
+  updateOrder,
   deleteOrder,
   signIn,
   signUp

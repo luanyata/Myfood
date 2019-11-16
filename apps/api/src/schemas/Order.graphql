@@ -22,6 +22,14 @@ input OrderItemCreateInput {
   total: Float!
 }
 
+input OrderUpdateInput {
+  status: OrderStatus
+  user: ID
+  itemsToAdd: [OrderItemCreateInput!]
+  itemsToUpdate: [OrderItemUpdateInput!]
+  itemToDelete: [ID!]
+}
+
 type OrderItem {
   _id: ID!
   product: Product!
@@ -29,6 +37,13 @@ type OrderItem {
   total: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
+}
+
+input OrderItemUpdateInput {
+  _id: ID!
+  product: ID!
+  quantity: Float!
+  total: Float!
 }
 
 enum OrderStatus {
@@ -48,4 +63,5 @@ type Query {
 type Mutation {
   createOrder(data: OrderCreateInput!): Order! @auth
   deleteOrder(_id: ID!): Order! @auth
+  updateOrder(data: OrderUpdateInput!, _id: ID!): Order! @auth
 }

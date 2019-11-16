@@ -1,5 +1,9 @@
 import { Document, Types, Model } from 'mongoose'
-import { CheckExistenceOptions, TokenPayload } from './types'
+import {
+  CheckExistenceOptions,
+  TokenPayload,
+  OrderItemSubdocument
+} from './types'
 import { CustomError } from './errors'
 import { SignOptions, sign } from 'jsonwebtoken'
 
@@ -41,4 +45,28 @@ const findDocument = async <T extends Document>(
 const issueToken = (payload: TokenPayload, options?: SignOptions): string =>
   sign(payload, process.env.JWT_SECRET, { expiresIn: '2h', ...options })
 
-export { isMongoId, findDocument, issueToken }
+const findOrderItem = (
+  items: Types.DocumentArray<OrderItemSubdocument>,
+  _id: string,
+  operation: 'update' | 'delete'
+): OrderItemSubdocument => {
+  if (!isMongoId(_id)) {
+    throw new CustomError(
+      `Invalid ID value for ${_id} in item to ${operation}`,
+      'INVALID_ID_VALUE'
+    )
+  }
+
+  const item = items.id(_id)
+
+  if (!item) {
+    throw new CustomError(
+      `Item with id ${_id} not found to ${operation}!`,
+      'NOT_FOUND_ERROR'
+    )
+  }
+
+  return item
+}
+
+export { findOrderItem, isMongoId, findDocument, issueToken }
