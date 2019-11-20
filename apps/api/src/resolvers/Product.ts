@@ -12,6 +12,7 @@ import { findDocument, paginateAndSort } from '../utils'
 
 const products: Resolver<PaginationArgs> = (_, args, { db }) => {
   const { Product } = db
+  console.log(args.where)
   return paginateAndSort(Product.find(), args)
 }
 

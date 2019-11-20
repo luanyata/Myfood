@@ -28,8 +28,58 @@ enum Unit {
   KG
 }
 
+enum ProductOrderByInput {
+  name_ASC
+  name_DESC
+  price_ASC
+  price_DESC
+  unit_ASC
+  unit_DESC
+}
+
+input ProductWhereInput {
+  nameEq: String
+  nameNe: String
+  nameIn: [String!]
+  nameNin: [String!]
+  nameRegex: String
+  nameOptions: String
+
+  descriptionEq: String
+  descriptionNe: String
+  descriptionIn: [String!]
+  descriptionNin: [String!]
+  descriptionRegex: String
+  descriptionOptions: String
+
+  priceEq: Float
+  priceNe: Float
+  priceIn: [Float!]
+  priceNin: [Float!]
+  priceLT: Float
+  priceLte: Float
+  priceGt: Float
+  priceGte: Float
+
+  unitEq: String
+  unitNe: String
+  unitIn: [String!]
+  unitNin: [String!]
+  unitRegex: String
+  unitOptions: String
+
+  AND: [ProductWhereInput!]
+  OR: [ProductWhereInput!]
+  NOR: [ProductWhereInput!]
+}
+
 type Query {
-  products(skip: Int, limit: Int): [Product!]
+  products(
+    skip: Int
+    limit: Int
+    orderBy: [ProductOrderByInput!]
+    where: ProductWhereInput
+  ): [Product!]
   product(_id: ID!): Product!
 }
 

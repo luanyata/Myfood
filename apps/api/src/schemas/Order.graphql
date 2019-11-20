@@ -55,8 +55,65 @@ enum OrderStatus {
   DELIVERED
 }
 
+enum OrderOrderByInput {
+  total_ASC
+  total_DESC
+  createdAt_ASC
+  createdAt_DESC
+  updatedAt_ASC
+  updatedAt_DESC
+}
+
+input OrderWhereInput {
+  totalEq: Float
+  totalNe: Float
+  totalIn: [Float!]
+  totalNin: [Float!]
+  totalLT: Float
+  totalLte: Float
+  totalGt: Float
+  totalGte: Float
+
+  statusEq: OrderStatus
+  statusNe: OrderStatus
+  statusIn: [OrderStatus!]
+  statusNin: [OrderStatus!]
+
+  createdAtEq: DateTime
+  createdAtNe: DateTime
+  createdAtIn: [DateTime!]
+  createdAtNin: [DateTime!]
+  createdAtLT: DateTime
+  createdAtLte: DateTime
+  createdAtGt: DateTime
+  createdAtGte: DateTime
+
+  updatedAtEq: DateTime
+  updatedAtNe: DateTime
+  updatedAtIn: [DateTime!]
+  updatedAtNin: [DateTime!]
+  updatedAtLT: DateTime
+  updatedAtLte: DateTime
+  updatedAtGt: DateTime
+  updatedAtGte: DateTime
+
+  userEq: ID
+  userNe: ID
+  userIn: [ID!]
+  userNin: [ID!]
+
+  AND: [OrderWhereInput!]
+  OR: [OrderWhereInput!]
+  NOR: [OrderWhereInput!]
+}
+
 type Query {
-  orders(skip: Int, limit: Int): [Order!]! @auth
+  orders(
+    skip: Int
+    limit: Int
+    orderBy: [OrderOrderByInput!]
+    where: OrderWhereInput
+  ): [Order!]! @auth
   order(_id: ID!): Order! @auth
 }
 

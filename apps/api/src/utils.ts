@@ -74,8 +74,60 @@ const paginateAndSort = <TDoc extends Document>(
   query: DocumentQuery<TDoc[], TDoc>,
   args: PaginationArgs
 ): DocumentQuery<TDoc[], TDoc> => {
-  const { skip = 0, limit = 10 } = args
-  return query.skip(skip).limit(limit <= 20 ? limit : 20)
+  const { skip = 0, limit = 10, orderBy = [] } = args
+
+  return query
+    .skip(skip)
+    .limit(limit <= 20 ? limit : 20)
+    .sort(orderBy.join(' '))
 }
 
-export { findOrderItem, isMongoId, findDocument, issueToken, paginateAndSort }
+const buildOrderByResolvers = (fields: string[]): Record<string, string> =>
+  fields.reduce(
+    (resolvers, field) => ({
+      ...resolvers,
+      [`${field}_ASC`]: field,
+      [`${field}_DESC`]: `-${field}`
+    }),
+    {}
+  )
+
+const operators = [
+  { name: 'Eq', op: '$eq' },
+  { name: 'Ne', op: '$ne' },
+  { name: 'Lt', op: '$lt' },
+  { name: 'Lte', op: '$lte' },
+  { name: 'Gt', op: '$gt' },
+  { name: 'Gte', op: '$gte' },
+  { name: 'In', op: '$in' },
+  { name: 'Nin', op: '$nin' },
+  { name: 'Regex', op: '$regex' },
+  { name: 'Options', op: '$options' }
+]
+
+const buildConditions = (where: Record<string, any>): Record<string, any> =>
+  Object.keys(where).reduce((conditions, whereKey) => {
+    const operator = operators.find(({ name }) =>
+      new RegExp(`${name}$`).test(whereKey)
+    )
+
+    const fieldName = operator
+      ? whereKey.replace(operator.name, '')
+      : '$' + whereKey.toLowerCase()
+
+    const fieldValue = operator
+      ? { ...conditions[fieldName], [operator.op]: where[whereKey] }
+      : where[whereKey].map(buildConditions)
+
+    return { ...conditions, [fieldName]: fieldValue }
+  }, {})
+
+export {
+  findOrderItem,
+  buildConditions,
+  buildOrderByResolvers,
+  isMongoId,
+  findDocument,
+  issueToken,
+  paginateAndSort
+}
