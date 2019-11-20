@@ -34,7 +34,8 @@ type Query {
 }
 
 type Mutation {
-  createProduct(data: ProductCreateInput!): Product!
+  createProduct(data: ProductCreateInput!): Product! @auth(role: ADMIN)
   updateProduct(data: ProductUpdateInput!, _id: ID!): Product!
-  deleteProduct(_id: ID!): Product!
+    @auth(role: ADMIN)
+  deleteProduct(_id: ID!): Product! @auth(role: ADMIN)
 }

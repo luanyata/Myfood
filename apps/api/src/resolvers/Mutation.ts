@@ -1,11 +1,11 @@
 import { compare, hash } from 'bcryptjs'
 import {
   Resolver,
-  ProductCreateInput,
-  ProductByIdInput,
-  ProductUpdateInput,
-  UserSignUpInput,
-  UserSignInInput,
+  ProductCreateArgs,
+  ProductByIdArgs,
+  ProductUpdateArgs,
+  UserSignUpArgs,
+  UserSignInArgs,
   ProductDocument,
   OrderCreateArgs,
   UserRole,
@@ -17,7 +17,7 @@ import { findDocument, issueToken, findOrderItem } from '../utils'
 import { CustomError } from '../errors'
 import { Types } from 'mongoose'
 
-const createProduct: Resolver<ProductCreateInput> = (_, args, { db }) => {
+const createProduct: Resolver<ProductCreateArgs> = (_, args, { db }) => {
   const { Product } = db
   const { data } = args
   const product = new Product(data)
@@ -25,7 +25,7 @@ const createProduct: Resolver<ProductCreateInput> = (_, args, { db }) => {
   return product.save()
 }
 
-const updateProduct: Resolver<ProductUpdateInput> = async (_, args, { db }) => {
+const updateProduct: Resolver<ProductUpdateArgs> = async (_, args, { db }) => {
   const { _id, data } = args
 
   const product = await findDocument<ProductDocument>({
@@ -40,7 +40,7 @@ const updateProduct: Resolver<ProductUpdateInput> = async (_, args, { db }) => {
   return product.save()
 }
 
-const deleteProduct: Resolver<ProductByIdInput> = async (_, arg, { db }) => {
+const deleteProduct: Resolver<ProductByIdArgs> = async (_, arg, { db }) => {
   const { _id } = arg
 
   const product = await findDocument<ProductDocument>({
@@ -52,7 +52,7 @@ const deleteProduct: Resolver<ProductByIdInput> = async (_, arg, { db }) => {
   return product.remove()
 }
 
-const signIn: Resolver<UserSignInInput> = async (_, args, { db }) => {
+const signIn: Resolver<UserSignInArgs> = async (_, args, { db }) => {
   const { User } = db
   const { email, password } = args.data
   const err = new CustomError(
@@ -78,7 +78,7 @@ const signIn: Resolver<UserSignInInput> = async (_, args, { db }) => {
   return { token, user }
 }
 
-const signUp: Resolver<UserSignUpInput> = async (_, args, { db }) => {
+const signUp: Resolver<UserSignUpArgs> = async (_, args, { db }) => {
   const { User } = db
   const { data } = args
 
@@ -106,7 +106,10 @@ const createOrder: Resolver<OrderCreateArgs> = async (
   const user = role === UserRole.USER ? _id : data.user || _id
 
   const total =
-    (data.items && data.items.reduce((sum, item) => sum + item.total, 0)) || 0
+    (data &&
+      data.items &&
+      data.items.reduce((sum, item) => sum + item.total, 0)) ||
+    0
 
   const order = await new Order({
     ...data,
@@ -160,7 +163,12 @@ const updateOrder: Resolver<OrderUpdateArgs> = async (
 
   const user = !isAdmin ? userId : data.user || order.user
 
-  const { itemsToAdd = [], itemsToUpdate = [], itemsToDelete = [] } = args.data
+  const {
+    itemsToAdd = [],
+    itemsToUpdate = [],
+    itemsToDelete = [],
+    status
+  } = args.data
 
   const foundItemsToUpdate = itemsToUpdate.map(orderItem =>
     findOrderItem(order.items, orderItem._id, 'update')
@@ -191,7 +199,10 @@ const updateOrder: Resolver<OrderUpdateArgs> = async (
     order.items.push(itemToAdd)
   })
 
+  const total = order.items.reduce((sum, item) => sum + item.total, 0)
   order.user = user
+  order.total = total
+  order.status = status || order.status
 
   return order.save()
 }

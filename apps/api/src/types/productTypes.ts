@@ -13,14 +13,12 @@ export interface ProductDocument extends Product, Document {
   _id: Types.ObjectId
 }
 
-export interface ProductCreateInput {
+export interface ProductCreateArgs {
   data: OmitId<Product>
 }
 
-export interface ProductByIdInput {
+export interface ProductByIdArgs {
   _id: string
 }
 
-export interface ProductUpdateInput
-  extends ProductCreateInput,
-    ProductByIdInput {}
+export interface ProductUpdateArgs extends ProductCreateArgs, ProductByIdArgs {}

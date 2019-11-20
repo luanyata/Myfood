@@ -27,7 +27,7 @@ input OrderUpdateInput {
   user: ID
   itemsToAdd: [OrderItemCreateInput!]
   itemsToUpdate: [OrderItemUpdateInput!]
-  itemToDelete: [ID!]
+  itemsToDelete: [ID!]
 }
 
 type OrderItem {
@@ -61,7 +61,7 @@ type Query {
 }
 
 type Mutation {
-  createOrder(data: OrderCreateInput!): Order! @auth
+  createOrder(data: OrderCreateInput): Order! @auth
   deleteOrder(_id: ID!): Order! @auth
   updateOrder(data: OrderUpdateInput!, _id: ID!): Order! @auth
 }
