@@ -16,3 +16,8 @@ export interface TokenPayload {
   sub: Types.ObjectId
   role: UserRole
 }
+
+export interface PaginationArgs {
+  skip: number
+  limit: number
+}
