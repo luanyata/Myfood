@@ -8,7 +8,12 @@ import {
   OrderByIdArgs,
   PaginationArgs
 } from '../types'
-import { findDocument, findOrderItem, paginateAndSort } from '../utils'
+import {
+  findDocument,
+  findOrderItem,
+  paginateAndSort,
+  buildConditions
+} from '../utils'
 
 import { Types } from 'mongoose'
 
@@ -18,7 +23,9 @@ const orders: Resolver<PaginationArgs> = (_, args, { db, authUser }) => {
   const { _id, role } = authUser
   const { Order } = db
 
-  const conditions = role === UserRole.USER ? { user: _id } : {}
+  let conditions = buildConditions(args.where)
+  conditions =
+    role === UserRole.USER ? { ...conditions, user: _id } : conditions
 
   return paginateAndSort(Order.find(conditions), args)
 }

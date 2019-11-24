@@ -56,7 +56,7 @@ input ProductWhereInput {
   priceNe: Float
   priceIn: [Float!]
   priceNin: [Float!]
-  priceLT: Float
+  priceLt: Float
   priceLte: Float
   priceGt: Float
   priceGte: Float
@@ -79,7 +79,7 @@ type Query {
     limit: Int
     orderBy: [ProductOrderByInput!]
     where: ProductWhereInput
-  ): [Product!]
+  ): [Product!]!
   product(_id: ID!): Product!
 }
 

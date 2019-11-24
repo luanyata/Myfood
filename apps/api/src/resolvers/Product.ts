@@ -6,14 +6,16 @@ import {
   ProductUpdateArgs,
   PaginationArgs
 } from '../types'
-import { findDocument, paginateAndSort } from '../utils'
+import { findDocument, paginateAndSort, buildConditions } from '../utils'
 
 // Queries
 
 const products: Resolver<PaginationArgs> = (_, args, { db }) => {
   const { Product } = db
   console.log(args.where)
-  return paginateAndSort(Product.find(), args)
+
+  const conditions = buildConditions(args.where)
+  return paginateAndSort(Product.find(conditions), args)
 }
 
 const product: Resolver<ProductByIdArgs> = async (_, arg, { db }) => {

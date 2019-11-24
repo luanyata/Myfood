@@ -69,7 +69,7 @@ input OrderWhereInput {
   totalNe: Float
   totalIn: [Float!]
   totalNin: [Float!]
-  totalLT: Float
+  totalLt: Float
   totalLte: Float
   totalGt: Float
   totalGte: Float
@@ -83,7 +83,7 @@ input OrderWhereInput {
   createdAtNe: DateTime
   createdAtIn: [DateTime!]
   createdAtNin: [DateTime!]
-  createdAtLT: DateTime
+  createdAtLt: DateTime
   createdAtLte: DateTime
   createdAtGt: DateTime
   createdAtGte: DateTime
@@ -92,7 +92,7 @@ input OrderWhereInput {
   updatedAtNe: DateTime
   updatedAtIn: [DateTime!]
   updatedAtNin: [DateTime!]
-  updatedAtLT: DateTime
+  updatedAtLt: DateTime
   updatedAtLte: DateTime
   updatedAtGt: DateTime
   updatedAtGte: DateTime
