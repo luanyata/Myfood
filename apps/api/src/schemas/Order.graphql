@@ -64,6 +64,21 @@ enum OrderOrderByInput {
   updatedAt_DESC
 }
 
+input OrderSubscriptionWhereInput {
+  mutationIn: [MutationType!]!
+}
+
+type OrderSubscriptionPayload {
+  mutation: MutationType!
+  node: Order!
+}
+
+enum MutationType {
+  CREATED
+  UPDATED
+  DELETED
+}
+
 input OrderWhereInput {
   totalEq: Float
   totalNe: Float
@@ -121,4 +136,8 @@ type Mutation {
   createOrder(data: OrderCreateInput): Order! @auth
   deleteOrder(_id: ID!): Order! @auth
   updateOrder(data: OrderUpdateInput!, _id: ID!): Order! @auth
+}
+
+type Subscription {
+  order(where: OrderSubscriptionWhereInput!): OrderSubscriptionPayload!
 }
