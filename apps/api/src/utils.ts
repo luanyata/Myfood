@@ -1,12 +1,22 @@
-import { Document, Types, Model, DocumentQuery } from 'mongoose'
+import { GraphQLResolveInfo } from 'graphql'
+import { fieldsList } from 'graphql-fields-list'
+import { SignOptions, sign } from 'jsonwebtoken'
+import { Document, DocumentQuery, Model, Types } from 'mongoose'
 import {
   FindDocumentOptions,
-  TokenPayload,
+  GetFieldsOptions,
   OrderItemSubdocument,
-  PaginationArgs
+  PaginationArgs,
+  TokenPayload
 } from './types'
 import { CustomError } from './errors'
-import { SignOptions, sign } from 'jsonwebtoken'
+import {
+  INVALID_ID_ERRO,
+  INVALID_ID_CONDITION_ERROR,
+  NOT_FOUND_ERROR,
+  INVALID_ID_VALUE,
+  DOCUMENT_NOT_FOUND_ERROR
+} from './errors/MessageError'
 
 const isMongoId = (value: string): boolean => Types.ObjectId.isValid(value)
 
@@ -17,27 +27,30 @@ const findDocument = async <T extends Document>(
     model,
     db,
     field,
-    where,
     value,
+    where,
     message,
     errorCode,
-    extensions
+    extensions,
+    select
   } = opts
-  // TODO Criar Enum de Status Code
+
   if (field === '_id' && !isMongoId(value)) {
-    throw new CustomError(`Invalid ID value for ${value}!`, 'INVALID_ID_ERROR')
+    throw new CustomError(INVALID_ID_ERRO(value))
   }
 
   const document = await ((db[model] as unknown) as Model<T>)
     .findOne(where || { [field]: value })
+    .select(select)
     .exec()
 
   if (!document) {
-    throw new CustomError(
-      message || `${model} with ${field} '${value}' not found!`,
-      errorCode || 'NOT_FOUND_ERROR',
-      extensions
-    )
+    const error = DOCUMENT_NOT_FOUND_ERROR(model, field, value)
+
+    error.message = message || error.message
+    error.code = errorCode || error.code
+
+    throw new CustomError(error, extensions)
   }
 
   return document
@@ -52,19 +65,13 @@ const findOrderItem = (
   operation: 'update' | 'delete'
 ): OrderItemSubdocument => {
   if (!isMongoId(_id)) {
-    throw new CustomError(
-      `Invalid ID value for ${_id} in item to ${operation}`,
-      'INVALID_ID_VALUE'
-    )
+    throw new CustomError(INVALID_ID_VALUE(_id, operation))
   }
 
   const item = items.id(_id)
 
   if (!item) {
-    throw new CustomError(
-      `Item with id ${_id} not found to ${operation}!`,
-      'NOT_FOUND_ERROR'
-    )
+    throw new CustomError(NOT_FOUND_ERROR(_id, operation))
   }
 
   return item
@@ -75,7 +82,6 @@ const paginateAndSort = <TDoc extends Document>(
   args: PaginationArgs
 ): DocumentQuery<TDoc[], TDoc> => {
   const { skip = 0, limit = 10, orderBy = [] } = args
-
   return query
     .skip(skip)
     .limit(limit <= 20 ? limit : 20)
@@ -117,10 +123,7 @@ const buildConditions = (
         : [where[whereKey]]
 
       if (ids.some(id => !isMongoId(id))) {
-        throw new CustomError(
-          `Invalid ID value for condition ${whereKey}!`,
-          'INVALID_ID_ERROR'
-        )
+        throw new CustomError(INVALID_ID_CONDITION_ERROR(whereKey))
       }
     }
 
@@ -129,21 +132,39 @@ const buildConditions = (
     )
 
     const fieldName = operator
-      ? whereKey.replace(operator.name, '')
-      : '$' + whereKey.toLowerCase()
+      ? whereKey.replace(operator.name, '') // price
+      : '$' + whereKey.toLowerCase() // $or
 
     const fieldValue = operator
       ? { ...conditions[fieldName], [operator.op]: where[whereKey] }
       : where[whereKey].map(buildConditions)
-    return { ...conditions, [fieldName]: fieldValue }
+
+    return {
+      ...conditions,
+      [fieldName]: fieldValue
+    }
   }, {})
 
+const getFields = (
+  info: GraphQLResolveInfo,
+  options?: GetFieldsOptions
+): string => {
+  let fields = fieldsList(info)
+  if (options) {
+    const { include = [], skip = [] } = options
+    fields = fields.concat(include)
+    fields = fields.filter(f => !skip.includes(f))
+  }
+  return fields.join(' ')
+}
+
 export {
-  findOrderItem,
   buildConditions,
   buildOrderByResolvers,
-  isMongoId,
   findDocument,
+  findOrderItem,
+  getFields,
+  isMongoId,
   issueToken,
   paginateAndSort
 }

@@ -11,12 +11,17 @@
     "license": "MIT",
     "dependencies": {
         "bcryptjs": "^2.4.3",
+        "dataloader": "^1.4.0",
+        "graphql-fields-list": "^2.1.2",
+        "graphql-redis-subscriptions": "^2.1.1",
         "graphql-yoga": "^1.18.3",
+        "ioredis": "^4.14.1",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.7.0"
     },
     "devDependencies": {
         "@types/bcryptjs": "^2.4.2",
+        "@types/ioredis": "^4.0.18",
         "@types/jsonwebtoken": "^8.3.4",
         "@types/mongoose": "^5.5.17",
         "@types/node": "^12.11.1",

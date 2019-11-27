@@ -3,14 +3,12 @@ import { Resolver, UserSignUpArgs, UserSignInArgs } from '../types'
 
 import { issueToken } from '../utils'
 import { CustomError } from '../errors'
+import { INVALID_CREDENTIALS_ERROR } from '../errors/MessageError'
 
 const signIn: Resolver<UserSignInArgs> = async (_, args, { db }) => {
   const { User } = db
   const { email, password } = args.data
-  const err = new CustomError(
-    'Invalid Credentials',
-    'INVALID_CREDENTIALS_ERROR'
-  )
+  const err = new CustomError(INVALID_CREDENTIALS_ERROR)
 
   const user = await User.findOne({ email })
 

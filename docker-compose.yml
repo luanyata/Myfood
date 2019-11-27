@@ -9,6 +9,8 @@ services:
     environment:
       JWT_SECRET:
       MONGO_URI:
+      REDIS_HOST:
+      REDIS_PORT:
 
   mongo:
     container_name: mongo
@@ -16,3 +18,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME:
       MONGO_INITDB_ROOT_PASSWORD:
+
+  redis:
+    container_name: redis
+    image: redis:5-alpine

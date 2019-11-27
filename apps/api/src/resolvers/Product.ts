@@ -6,26 +6,30 @@ import {
   ProductUpdateArgs,
   PaginationArgs
 } from '../types'
-import { findDocument, paginateAndSort, buildConditions } from '../utils'
+import {
+  findDocument,
+  paginateAndSort,
+  buildConditions,
+  getFields
+} from '../utils'
 
 // Queries
 
-const products: Resolver<PaginationArgs> = (_, args, { db }) => {
+const products: Resolver<PaginationArgs> = (_, args, { db }, info) => {
   const { Product } = db
-  console.log(args.where)
-
   const conditions = buildConditions(args.where)
-  return paginateAndSort(Product.find(conditions), args)
+  const query = Product.find(conditions).select(getFields(info))
+  return paginateAndSort(query, args)
 }
 
-const product: Resolver<ProductByIdArgs> = async (_, arg, { db }) => {
-  const { _id } = arg
-
+const product: Resolver<ProductByIdArgs> = (_, args, { db }, info) => {
+  const { _id } = args
   return findDocument<ProductDocument>({
     db,
     model: 'Product',
     field: '_id',
-    value: _id
+    value: _id,
+    select: getFields(info)
   })
 }
 
@@ -35,33 +39,40 @@ const createProduct: Resolver<ProductCreateArgs> = (_, args, { db }) => {
   const { Product } = db
   const { data } = args
   const product = new Product(data)
-
   return product.save()
 }
 
-const updateProduct: Resolver<ProductUpdateArgs> = async (_, args, { db }) => {
+const updateProduct: Resolver<ProductUpdateArgs> = async (
+  _,
+  args,
+  { db },
+  info
+) => {
   const { _id, data } = args
-
   const product = await findDocument<ProductDocument>({
     db,
     model: 'Product',
     field: '_id',
-    value: _id
+    value: _id,
+    select: getFields(info)
   })
-
   Object.keys(data).forEach(prop => (product[prop] = data[prop]))
-
   return product.save()
 }
 
-const deleteProduct: Resolver<ProductByIdArgs> = async (_, arg, { db }) => {
-  const { _id } = arg
-
+const deleteProduct: Resolver<ProductByIdArgs> = async (
+  _,
+  args,
+  { db },
+  info
+) => {
+  const { _id } = args
   const product = await findDocument<ProductDocument>({
     db,
     model: 'Product',
     field: '_id',
-    value: _id
+    value: _id,
+    select: getFields(info)
   })
   return product.remove()
 }

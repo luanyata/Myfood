@@ -7,7 +7,7 @@ export type Resolver<TArgs, TSource = {}> = GraphQLFieldResolver<
   TArgs
 >
 
-enum MutationType {
+export enum MutationType {
   CREATED = 'CREATED',
   UPDATED = 'UPDATED',
   DELETED = 'DELETED'

@@ -10,6 +10,7 @@ export interface FindDocumentOptions {
   where?: Record<string, any>
   errorCode?: string
   extensions?: Record<string, any>
+  select?: string
 }
 
 export interface TokenPayload {
@@ -22,4 +23,9 @@ export interface PaginationArgs {
   limit: number
   orderBy: string[]
   where: Record<string, any>
+}
+
+export interface GetFieldsOptions {
+  include?: string[]
+  skip?: string[]
 }

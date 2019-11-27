@@ -1,6 +1,7 @@
 import { IMiddlewareResolver } from 'graphql-middleware/dist/types'
 import { Context } from '../types'
 import { CustomError } from '../errors'
+import { INTERNAL_SERVER_ERROR } from '../errors/MessageError'
 
 const cathErrorsMiddleware: IMiddlewareResolver<any, Context> = async (
   resolve,
@@ -12,8 +13,7 @@ const cathErrorsMiddleware: IMiddlewareResolver<any, Context> = async (
     if (err instanceof CustomError) {
       throw err
     }
-    console.log('ERROR', err)
-    throw new CustomError('Internal Server Error', 'INTERNAL_SERVER_ERROR')
+    throw new CustomError(INTERNAL_SERVER_ERROR)
   }
 }
 

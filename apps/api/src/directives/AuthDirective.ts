@@ -3,6 +3,7 @@ import { GraphQLField, defaultFieldResolver } from 'graphql'
 import { Context, Resolver, TokenPayload } from '../types'
 import { CustomError } from '../errors'
 import { verify } from 'jsonwebtoken'
+import { UNAUTHORIZED_ERROR, INVALID_TOKEN_ERROR } from '../errors/MessageError'
 
 class AuthDirective extends SchemaDirectiveVisitor {
   visitFieldDefinition(field: GraphQLField<any, Context>): void {
@@ -23,7 +24,7 @@ class AuthDirective extends SchemaDirectiveVisitor {
           ctx.connection.context.authorization
 
       if (!Authorization) {
-        throw new CustomError('Unauthorized', 'UNAUTHORIZED_ERROR', {
+        throw new CustomError(UNAUTHORIZED_ERROR, {
           detail: 'Token not provided!'
         })
       }
@@ -38,14 +39,14 @@ class AuthDirective extends SchemaDirectiveVisitor {
         const authUser = { _id: sub, role }
         ctx = { ...ctx, authUser }
       } catch (err) {
-        throw new CustomError('Invalid Token!', 'INVALID_TOKEN_ERROR', err)
+        throw new CustomError(INVALID_TOKEN_ERROR, err)
       }
 
       const { role: expectedRole } = this.args
       const { role: userRole } = ctx.authUser
 
       if (expectedRole && expectedRole !== userRole) {
-        throw new CustomError('Unauthorized', 'UNAUTHORIZED_ERROR', {
+        throw new CustomError(UNAUTHORIZED_ERROR, {
           detail: `Required ${expectedRole} level!`
         })
       }
