@@ -2,6 +2,8 @@ version: "3.4"
 
 services:
   api:
+    build:
+      target: dev-stage
     ports:
       - "4000:4000"
     command: npm run dev
@@ -11,6 +13,8 @@ services:
   mongo-express:
     container_name: mongo_express
     image: mongo-express:0.49
+    depends_on:
+      - mongo
     ports:
       - "8081:8081"
     environment:

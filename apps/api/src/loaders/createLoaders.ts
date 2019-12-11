@@ -27,20 +27,17 @@ const batchLoadFn = async (
 }
 
 const createLoaders = (modelsNames: (keyof Models)[]): DataLoaders =>
-  modelsNames.reduce(
-    (loaders, modelName) => {
-      const loaderName = `${modelName.toLowerCase()}Loader`
-      return {
-        ...loaders,
-        [loaderName]: new DataLoader<DataLoaderParam, Document>(
-          (params): Promise<Document[]> => batchLoadFn(db[modelName], params),
-          {
-            cacheKeyFn: (param: DataLoaderParam): Types.ObjectId => param.key
-          }
-        )
-      }
-    },
-    {} as DataLoaders
-  )
+  modelsNames.reduce((loaders, modelName) => {
+    const loaderName = `${modelName.toLowerCase()}Loader`
+    return {
+      ...loaders,
+      [loaderName]: new DataLoader<DataLoaderParam, Document>(
+        (params): Promise<Document[]> => batchLoadFn(db[modelName], params),
+        {
+          cacheKeyFn: (param: DataLoaderParam): Types.ObjectId => param.key
+        }
+      )
+    }
+  }, {} as DataLoaders)
 
 export { createLoaders }

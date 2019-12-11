@@ -6,11 +6,17 @@ services:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
+    depends_on:
+      - mongo
+      - redis
     environment:
+      NODE_ENV:
       JWT_SECRET:
       MONGO_URI:
       REDIS_HOST:
       REDIS_PORT:
+      REDIS_PASSWORD:
+      CLIENT_HOSTS:
 
   mongo:
     container_name: mongo
